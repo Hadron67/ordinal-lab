@@ -1,0 +1,11 @@
+* {
+    box-sizing: border-box;
+}
+
+input[type="text"].error {
+    border-color: red;
+}
+
+math {
+    font-size: large;
+}
