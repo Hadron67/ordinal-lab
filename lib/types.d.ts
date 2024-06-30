@@ -11,12 +11,12 @@ export type OrdinalExpression =
 
 export interface VeblenFunction {
     type: "veblen";
-    args: VeblenFunctionArgs;
+    args: ArrayOrdinal;
 }
 
-export interface VeblenFunctionArgs {
+export interface ArrayOrdinal {
     positionalArgs: OrdinalExpression[];
-    kwArgs: [VeblenFunctionArgs, OrdinalExpression][];
+    kwArgs: [ArrayOrdinal, OrdinalExpression][];
 }
 
 export interface YSequence {
