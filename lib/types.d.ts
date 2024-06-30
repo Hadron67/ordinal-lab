@@ -23,3 +23,9 @@ export interface YSequence {
     base: OrdinalExpression;
     data: number[];
 }
+
+export interface HeldFunction<T> {
+    isLeaf: false;
+    args: number;
+    handler: (args: T[]) => T;
+}
