@@ -1,22 +1,25 @@
 export type OrdinalExpression =
-    | {type: "number", value: number}
+    | number
     | {type: "symbol", value: string}
     | {type: "omega"}
     | {type: "plus", subexpressions: OrdinalExpression[]}
     | {type: "times", subexpressions: OrdinalExpression[]}
     | {type: "power", base: OrdinalExpression, power: OrdinalExpression}
+    | {type: "omega-n", sub: OrdinalExpression}
     | VeblenFunction
     | {type: "y-sequence", data: YSequence}
 ;
 
-export interface VeblenFunction {
+export type Ordering = 0 | 1 | -1;
+export type MaximizerExecutor = (n: number, opt: MaximizerOptions) => void;
+
+export interface VeblenFunction extends NestedArrayExpression {
     type: "veblen";
-    args: ArrayOrdinal;
 }
 
-export interface ArrayOrdinal {
-    positionalArgs: OrdinalExpression[];
-    kwArgs: [ArrayOrdinal, OrdinalExpression][];
+export interface NestedArrayExpression {
+    positional: OrdinalExpression[];
+    kw: [NestedArrayExpression, OrdinalExpression][];
 }
 
 export interface YSequence {
@@ -24,8 +27,6 @@ export interface YSequence {
     data: number[];
 }
 
-export interface HeldFunction<T> {
-    isLeaf: false;
-    args: number;
-    handler: (args: T[]) => T;
+export interface MaximizerOptions {
+    postEpsilonOneNotation: 'veblen' | 'bocf';
 }
