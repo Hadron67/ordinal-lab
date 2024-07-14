@@ -5,7 +5,3 @@ export interface OrdinalMarkupConfig {
     autoClicker: boolean;
     autoMaximize: boolean;
 }
-
-export interface DisplayOptions {
-    showSpecialVeblenFns: boolean;
-}

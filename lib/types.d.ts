@@ -1,14 +1,23 @@
-export type OrdinalExpression =
+export interface DisplayOptions {
+    showSpecialVeblenFns: boolean;
+}
+
+export type Ordinal = number | CompoundOrdinal;
+
+export type DisplayNotation =
     | number
-    | {type: "symbol", value: string}
-    | {type: "omega"}
-    | {type: "plus", subexpressions: OrdinalExpression[]}
-    | {type: "times", subexpressions: OrdinalExpression[]}
-    | {type: "power", base: OrdinalExpression, power: OrdinalExpression}
-    | {type: "omega-n", sub: OrdinalExpression}
-    | VeblenFunction
-    | {type: "y-sequence", data: YSequence}
+    | {type: 'mi' | 'mo', value: string}
+    | {type: "subscript", expr: DisplayNotation[], subscript: DisplayNotation[]}
+    | {type: "superscript", expr: DisplayNotation[], superscript: DisplayNotation[]}
 ;
+
+export interface CompoundOrdinal {
+    foundamentalSequenceStep(n: number, stack: ((ord: Ordinal) => Ordinal)[]): [Ordinal, boolean];
+    compareAsync(other: Ordinal, cb: (ret: Ordering) => void, exec: (run: () => void) => void): void;
+    maximizeAsync(cb: (ret: Ordinal | null) => void, exec: (run: MaximizerExecutor) => void): void;
+    stringifyOne(): (string | Ordinal)[];
+    toDisplayNotationOne(todo: (Ordinal | ((stack: DisplayNotation[][]) => void))[], stack: DisplayNotation[][], opt: DisplayOptions): void;
+}
 
 export type Ordering = 0 | 1 | -1;
 export type MaximizerExecutor = (n: number, opt: MaximizerOptions) => void;
@@ -17,14 +26,12 @@ export interface VeblenFunction extends NestedArrayExpression {
     type: "veblen";
 }
 
-export interface NestedArrayExpression {
-    positional: OrdinalExpression[];
-    kw: [NestedArrayExpression, OrdinalExpression][];
-}
+export type NestedArrayCoord = NestedArrayExpression | Ordinal;
+export type NestedArrayTerm = [NestedArrayCoord, Ordinal];
 
-export interface YSequence {
-    base: OrdinalExpression;
-    data: number[];
+export interface NestedArrayExpression {
+    positional: Ordinal[];
+    kw: [NestedArrayCoord, Ordinal][];
 }
 
 export interface MaximizerOptions {
