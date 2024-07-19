@@ -13,17 +13,12 @@ export type CompoundExpression =
     | LambdaExpression
     | Omega
     | Slot
+    | AdmissibleOmega
+    | OrdinalCollapsingFn
+    | OrdinalLabOrdinal
 ;
 
-export interface ExpressionTypeMap {
-    'number': number;
-    'plus': PlusExpression;
-    'times': TimesExpression;
-    'power': PowerExpression;
-    'omega': Omega;
-    'lambda': LambdaExpression;
-    'slot': Slot;
-}
+export type ExpressionType = CompoundExpression['type'] | 'number';
 
 export interface PlusExpression {
     readonly type: 'plus';
@@ -45,6 +40,10 @@ export interface Omega {
     readonly type: 'omega';
 }
 
+export interface OrdinalLabOrdinal {
+    readonly type: 'olo';
+}
+
 export interface LambdaExpression {
     readonly type: 'lambda';
     readonly args: number[];
@@ -58,6 +57,17 @@ export interface Slot {
     readonly id: number;
 }
 
+export interface AdmissibleOmega {
+    readonly type: 'omega-n';
+    readonly subscript: Expression;
+}
+
+export interface OrdinalCollapsingFn {
+    readonly type: 'ocf';
+    readonly subscript: Expression;
+    readonly arg: Expression;
+}
+
 /**
  * We dont include the parent link in the expression nodes since expressions can have shared children, meaning there could be multiple parents.
  * But certain algorithms do need parent links, that's what `TracedExpression` is used for.
@@ -67,7 +77,6 @@ export type TracedExpressionWithIndex = {prev: TracedExpressionWithIndex, data: 
 export type EvaluatorCallback = (ret: Expression, evaluator: Evaluator) => void;
 
 export type Ordering = 0 | 1 | -1;
-export type MaximizerExecutor = (n: number, opt: MaximizerOptions) => void;
 
 export interface VeblenFunction extends NestedArrayExpression {
     readonly type: "veblen";
@@ -79,8 +88,4 @@ export type NestedArrayTerm = [NestedArrayCoord, Expression];
 export interface NestedArrayExpression {
     readonly positional: Expression[];
     readonly kw: [NestedArrayCoord, Expression][];
-}
-
-export interface MaximizerOptions {
-    postEpsilonOneNotation: 'veblen' | 'bocf';
 }
