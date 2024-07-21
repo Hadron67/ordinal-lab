@@ -2,6 +2,7 @@ import type { Evaluator } from "./ordinals";
 
 export interface DisplayOptions {
     showSpecialVeblenFns: boolean;
+    simplifiedOCFSubscripts: boolean;
 }
 
 export type PrimitiveExpression = number;
@@ -62,8 +63,11 @@ export interface AdmissibleOmega {
     readonly subscript: Expression;
 }
 
+export type OCFVariant = 'b' | 'm';
+
 export interface OrdinalCollapsingFn {
     readonly type: 'ocf';
+    readonly variant: OCFVariant;
     readonly subscript: Expression;
     readonly arg: Expression;
 }
