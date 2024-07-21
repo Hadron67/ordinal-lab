@@ -2,10 +2,35 @@
     box-sizing: border-box;
 }
 
+body {
+    font-family: sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
 input[type="text"].error {
     border-color: red;
 }
 
 math {
     font-size: large;
+}
+
+ul.ordinal-expand-list {
+    padding: 0 0;
+    list-style-type: none;
+}
+ul.ordinal-expand-list li {
+    padding: 3pt 30pt;
+}
+ul.ordinal-expand-list li.selected {
+    background-color: #eee;
+}
+
+button.radio.selected {
+    background-color: rgb(43, 226, 214);
+}
+
+div.options {
+    padding: 10pt;
 }

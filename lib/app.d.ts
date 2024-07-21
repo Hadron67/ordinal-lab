@@ -1,4 +1,4 @@
-import type { Expression } from "./types";
+import type { DisplayOptions, Expression } from "./types";
 
 export interface OrdinalMarkupConfig {
     ordinal: string;
@@ -8,11 +8,31 @@ export interface OrdinalMarkupConfig {
     autoMaximize: boolean;
 }
 
-export interface ExpandedOrdinalRow {
+export interface LList<T extends LList<T>> {
+    previous?: T;
+    next?: T;
+}
+
+export interface ExpandedOrdinalRow extends LList<ExpandedOrdinalRow> {
     readonly id: number;
-    readonly container: HTMLDivElement;
+    readonly container: HTMLLIElement;
+    readonly expressionContainer: HTMLDivElement;
     readonly ordinal: Expression;
-    readonly parent?: ExpandedOrdinalRow;
-    readonly children: ExpandedOrdinalRow[];
-    previous?: ExpandedOrdinalRow;
+}
+
+export interface DisplayModeSettings extends DisplayOptions {
+    mode: 'mathml' | 'html' | 'm';
+    stretchyBrackets: boolean;
+}
+
+export type OptionListData =
+    | {type: 'bool' | 'text'}
+    | {type: 'number', min?: number, max?: number, step?: number}
+    | {type: 'enum', candidates: [string, string][]}
+;
+
+export interface OptionItem {
+    key: string;
+    description: string;
+    data: OptionListData;
 }

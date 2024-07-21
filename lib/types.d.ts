@@ -93,3 +93,15 @@ export interface NestedArrayExpression {
     readonly positional: Expression[];
     readonly kw: [NestedArrayCoord, Expression][];
 }
+
+export type DisplayNotation =
+    | number
+    | DisplayNotation[]
+    | {type: 'psi' | 'omega' | 'Omega' | 'right-arrow' | 'alpha' | 'beta' | 'gamma'}
+    | {type: 'mo' | 'mi', text: string}
+    | {type: 'paren', expr: DisplayNotation}
+    | {type: 'sup', expr: DisplayNotation, superscript: DisplayNotation}
+    | {type: 'sub', expr: DisplayNotation, subscript: DisplayNotation}
+;
+
+export type SpecialChar = 'psi' | 'omega' | 'Omega' | 'right-arrow' | 'alpha' | 'beta' | 'gamma';
