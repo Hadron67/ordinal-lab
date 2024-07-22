@@ -6,6 +6,8 @@ body {
     font-family: sans-serif;
     padding: 0;
     margin: 0;
+    --var-base-bgcolor: rgb(43, 162, 226);
+    --var-btn-radius: 5pt;
 }
 
 input[type="text"].error {
@@ -16,21 +18,62 @@ math {
     font-size: large;
 }
 
-ul.ordinal-expand-list {
+ul.main {
     padding: 0 0;
     list-style-type: none;
 }
-ul.ordinal-expand-list li {
+ul.main > li {
     padding: 3pt 30pt;
+    border-left: 2pt solid #fff;
 }
-ul.ordinal-expand-list li.selected {
+ul.main > li.selected {
+    background-color: #eee;
+    border-left: 2pt solid var(--var-base-bgcolor);
+}
+
+button.selected, button:active {
+    background-color: var(--var-base-bgcolor);
+    color: #fff;
+}
+
+button {
+    border: 1pt solid var(--var-base-bgcolor);
+    border-radius: var(--var-btn-radius);
+    background-color: #eee;
+    padding: 4pt;
+}
+
+ul.settings {
+    list-style-type: none;
+    padding: 10pt;
+}
+
+ul.settings > li {
+    display: inline-block;
+    padding: 5pt;
+}
+
+ul.settings ul {
+    display: inline-block;
+    padding: 0;
+    list-style-type: none;
     background-color: #eee;
 }
 
-button.radio.selected {
-    background-color: rgb(43, 226, 214);
+ul.settings ul > li {
+    display: inline-block;
+    padding: 5pt;
 }
 
-div.options {
-    padding: 10pt;
+.ordinal-row-menu {
+    padding: 2pt 0 0 0;
+}
+
+.ordinal-row-menu ul {
+    list-style: none;
+    padding: 0;
+}
+.ordinal-row-menu ul > li {
+    display: inline-block;
+    padding: 0 5pt 0 0;
 }

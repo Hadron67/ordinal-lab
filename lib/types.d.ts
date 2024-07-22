@@ -15,6 +15,7 @@ export type CompoundExpression =
     | Omega
     | Slot
     | AdmissibleOmega
+    | InaccessibleOrdinal
     | OrdinalCollapsingFn
     | OrdinalLabOrdinal
 ;
@@ -61,6 +62,11 @@ export interface Slot {
 export interface AdmissibleOmega {
     readonly type: 'omega-n';
     readonly subscript: Expression;
+}
+
+export interface InaccessibleOrdinal {
+    readonly type: 'i-n';
+    readonly args: Expression[];
 }
 
 export type OCFVariant = 'b' | 'm';
