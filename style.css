@@ -6,8 +6,15 @@ body {
     font-family: sans-serif;
     padding: 0;
     margin: 0;
-    --var-base-bgcolor: rgb(43, 162, 226);
+    --var-base-blue: rgb(43, 162, 226);
+    --var-base-blank: #eee;
     --var-btn-radius: 5pt;
+}
+
+input[type="text"] {
+    border: 1px var(--var-base-blue) solid;
+    border-radius: var(--var-btn-radius);
+    padding: 4px;
 }
 
 input[type="text"].error {
@@ -18,28 +25,27 @@ math {
     font-size: large;
 }
 
-ul.main {
+ul.main, ol.main {
     padding: 0 0;
     list-style-type: none;
 }
-ul.main > li {
+ul.main, ol.main > li {
     padding: 3pt 30pt;
     border-left: 2pt solid #fff;
 }
-ul.main > li.selected {
-    background-color: #eee;
-    border-left: 2pt solid var(--var-base-bgcolor);
+ul.main, ol.main > li.selected {
+    border-left: 2pt solid var(--var-base-blue);
 }
 
 button.selected, button:active {
-    background-color: var(--var-base-bgcolor);
+    background-color: var(--var-base-blue);
     color: #fff;
 }
 
 button {
-    border: 1pt solid var(--var-base-bgcolor);
+    border: 1pt solid var(--var-base-blue);
     border-radius: var(--var-btn-radius);
-    background-color: #eee;
+    background-color: var(--var-base-blank);
     padding: 4pt;
 }
 
@@ -57,7 +63,7 @@ ul.settings ul {
     display: inline-block;
     padding: 0;
     list-style-type: none;
-    background-color: #eee;
+    background-color: var(--var-base-blank);
 }
 
 ul.settings ul > li {
@@ -65,15 +71,15 @@ ul.settings ul > li {
     padding: 5pt;
 }
 
-.ordinal-row-menu {
+.small-menu {
     padding: 2pt 0 0 0;
 }
 
-.ordinal-row-menu ul {
+ul.small-menu {
     list-style: none;
     padding: 0;
 }
-.ordinal-row-menu ul > li {
+ul.small-menu > li {
     display: inline-block;
     padding: 0 5pt 0 0;
 }

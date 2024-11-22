@@ -3,6 +3,7 @@
         "checkJs": true,
         "noEmit": true,
         "strictNullChecks": true,
-        "noImplicitAny": true
+        "noImplicitAny": true,
+        "lib": ["es2015", "dom"]
     }
 }

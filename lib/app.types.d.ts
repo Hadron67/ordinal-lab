@@ -36,3 +36,14 @@ export interface OptionItem {
     description: string;
     data: OptionListData;
 }
+
+export interface Applet {
+    readonly root: HTMLElement;
+    serialize(data: any): void;
+    loadData(data: any): void;
+}
+
+export interface AppletEntry {
+    readonly applet: Applet;
+    title: string;
+}
