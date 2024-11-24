@@ -31,7 +31,7 @@ export interface OrdinalEnumeratorConfig<T> {
 }
 
 export interface OrdinalEnumeratorElementManager<T> {
-    render(ordinal: T): Node;
+    render(ordinal: T, isCandidate: boolean): Node;
     serialize(data: any): void;
     deserialize(data: any): void;
 }
