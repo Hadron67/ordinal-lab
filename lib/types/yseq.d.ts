@@ -1,5 +1,5 @@
-import { LList } from "./app.types";
-import type { OrdinalExpanderItem, OrdinalMenu } from './enumerator';
+import { LList } from "./app";
+import type { OrdinalExpanderItem, OrdinalMenu } from '../enumerator';
 
 export interface Y0MontagneRow {
     readonly data: number[];

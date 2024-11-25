@@ -1,4 +1,4 @@
-import type { DisplayOptions, Expression } from "./types";
+import type { DisplayOptions, Expression } from "./ordinal";
 
 export interface OrdinalMarkupConfig {
     ordinal: string;
@@ -38,12 +38,22 @@ export interface OptionItem {
 }
 
 export interface Applet {
-    readonly root: HTMLElement;
+    getRoot(): Node;
     serialize(data: any): void;
     loadData(data: any): void;
 }
 
-export interface AppletEntry {
-    readonly applet: Applet;
-    title: string;
+export interface AppState {
+    openedApplets: string[];
+}
+
+export interface Tabpage {
+    getTitle(): Node;
+    getRoot(): Node;
+    close(): void;
+}
+
+export interface AppletInfo {
+    readonly title: string;
+    readonly id: number;
 }

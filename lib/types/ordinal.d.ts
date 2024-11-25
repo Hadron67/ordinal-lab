@@ -1,4 +1,4 @@
-import type { Evaluator } from "./ordinals";
+import type { Evaluator } from "../ordinals";
 
 export interface DisplayOptions {
     showSpecialVeblenFns: boolean;
