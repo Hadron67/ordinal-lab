@@ -10,6 +10,7 @@ body {
     --var-base-blue: rgb(43, 162, 226);
     --var-base-blank: #eee;
     --var-base-gray: #ccc;
+    --var-base-light-gray: #f0f0f0;
     --var-btn-radius: 3pt;
     --var-header-height: 50px;
 }
@@ -35,25 +36,33 @@ math {
 header {
     position: fixed;
     overflow-y: scroll;
-    top: 5px;
-    right: 5px;
-    margin: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: 10px;
     text-align: right;
-    padding: 5px 5px;
-    border: 1px solid var(--var-base-blue);
-    border-radius: var(--var-btn-radius);
-    z-index: 1;
 }
 
 header > * {
-    margin: 2px;
+    margin: 3px 0;
 }
 
-header ul {
-    margin-top: 0;
+ul.tablist {
+    margin: 0;
     display: inline-block;
     list-style: none;
-    padding: 0;
+    padding: 5px;
+}
+
+ul.tablist > li {
+    margin: 4px;
+    display: inline-block;
+    padding: 8px;
+    user-select: none;
+    cursor: pointer;
+    border: 1px solid var(--var-base-gray);
+    border-radius: var(--var-btn-radius);
+    background-color: #fff;
 }
 
 span.untitled {
@@ -61,18 +70,16 @@ span.untitled {
     font-style: italic;
 }
 
-header .tabheader > * {
+.tabheader > * {
     margin: 2px;
 }
 
-header ul > li {
-    margin: 2px;
+.tabheader {
     display: inline-block;
-    padding: 8px;
-    user-select: none;
-    cursor: pointer;
     border: 1px solid var(--var-base-gray);
     border-radius: var(--var-btn-radius);
+    padding: 5px;
+    background-color: #fff;
 }
 
 header ul > li.selected {
@@ -82,7 +89,7 @@ header ul > li.selected {
 }
 
 dialog {
-    border: 1px solid var(--var-base-blue);
+    border: 1px solid var(--var-base-gray);
     border-radius: var(--var-btn-radius);
 }
 
@@ -132,20 +139,21 @@ ul.main, ol.main > li.selected {
     border-left: 2pt solid var(--var-base-blue);
 }
 
-button.selected, button:active {
-    background-color: var(--var-base-blue);
-    color: #fff;
-}
-
 .ordinal-container {
     overflow-y: scroll;
 }
 
-button {
-    border: 1pt solid var(--var-base-blue);
+button, .button {
+    border: 1pt solid var(--var-base-gray);
     border-radius: var(--var-btn-radius);
-    background-color: var(--var-base-blank);
+    background-color: var(--var-base-light-gray);
     padding: 4pt;
+}
+
+button.selected, button:active, .button.selected, .button:active {
+    background-color: var(--var-base-blue);
+    border-color: var(--var-base-blue);
+    color: #fff;
 }
 
 ul.settings {
@@ -177,34 +185,71 @@ ul.settings ul > li {
 ul.small-menu {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 ul.small-menu > li {
     display: inline-block;
-    padding: 0 5pt 0 0;
+    margin: 4px;
+}
+.small-menu > * {
+    margin: 4px;
 }
 
 ul.bookmarks {
+    display: inline-block;
     list-style: none;
     padding: 0;
-    position: fixed;
-    top: 50px;
-    right: 10px;
-    overflow-y: scroll;
+    margin: 0;
     background-color: #fff;
-    border: 1px solid var(--var-base-gray);
-    border-radius: var(--var-btn-radius);
-    z-index: 0;
+    border-right: 1px solid var(--var-base-gray);
+    text-align: left;
+    position: sticky;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    align-self: flex-start;
+    overflow-y: scroll;
+    height: 100vh;
 }
 
-ul.bookmarks li {
+ul.bookmarks > li {
     padding: 2px 10px;
     cursor: pointer;
+    overflow-x: scroll;
+    border-bottom: 1px solid var(--var-base-gray);
 }
 
 ul.bookmarks li:hover {
-    background-color: var(--var-base-gray);
+    background-color: var(--var-base-light-gray);
 }
 
-ul.bookmarks li:not(:last-child) {
-    border-bottom: 1px solid var(--var-base-gray);
+button.tablist {
+    font-size: x-large;
+    height: 40px;
+    width: 40px;
+    vertical-align: middle;
+    text-align: center;
 }
+
+.twocols {
+    display: flex;
+    flex-direction: row;
+}
+
+.twocols > * {
+    flex-grow: 1;
+}
+
+/* .twocols > :first-child {
+    grid-row-start: 1;
+    grid-row-end: 1;
+    grid-column-start: 1;
+    grid-column-end: 1;
+}
+
+.twocols > :nth-child(2) {
+    grid-row-start: 1;
+    grid-row-end: 1;
+    grid-column-start: 2;
+    grid-column-end: 2;
+} */
