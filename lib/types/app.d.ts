@@ -1,4 +1,6 @@
 import type { DisplayOptions, Expression } from "./ordinal";
+import type { TabEntry } from "../tabhost";
+import type { AppletEntry } from '../appmanager';
 
 export interface OrdinalMarkupConfig {
     ordinal: string;
@@ -41,6 +43,7 @@ export interface Applet {
     getRoot(): Node;
     serialize(data: any): void;
     loadData(data: any): void;
+    onCreate(applet: AppletEntry): void;
 }
 
 export interface AppState {
@@ -48,12 +51,18 @@ export interface AppState {
 }
 
 export interface Tabpage {
-    getTitle(): Node;
+    getTitle(): Node[];
     getRoot(): Node;
-    close(): void;
+    onCreate(entry: TabEntry): void;
 }
 
 export interface AppletInfo {
     readonly title: string;
     readonly id: number;
+    readonly type: string;
+}
+
+export interface AppletFactory {
+    deserialize(data: any): Applet | null;
+    deserializeType(data: any): string | null;
 }
