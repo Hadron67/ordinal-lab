@@ -39,24 +39,22 @@ header {
     top: 0;
     right: 0;
     bottom: 0;
-    margin: 10px;
-    text-align: right;
-}
-
-header > * {
-    margin: 3px 0;
+    margin-top: 60px;
+    background-color: #fff;
+    border-top: 1px solid var(--var-base-gray);
+    border-left: 1px solid var(--var-base-gray);
 }
 
 ul.tablist {
     margin: 0;
-    display: inline-block;
     list-style: none;
     padding: 5px;
+    border-bottom: 1px solid var(--var-base-gray);
 }
 
 ul.tablist > li {
     margin: 4px;
-    display: inline-block;
+    display: block;
     padding: 8px;
     user-select: none;
     cursor: pointer;
@@ -76,8 +74,7 @@ span.untitled {
 
 .tabheader {
     display: inline-block;
-    border: 1px solid var(--var-base-gray);
-    border-radius: var(--var-btn-radius);
+    border-bottom: 1px solid var(--var-base-gray);
     padding: 5px;
     background-color: #fff;
 }
@@ -196,20 +193,12 @@ ul.small-menu > li {
 }
 
 ul.bookmarks {
-    display: inline-block;
     list-style: none;
     padding: 0;
     margin: 0;
     background-color: #fff;
     border-right: 1px solid var(--var-base-gray);
     text-align: left;
-    position: sticky;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    align-self: flex-start;
-    overflow-y: scroll;
-    height: 100vh;
 }
 
 ul.bookmarks > li {
@@ -223,33 +212,18 @@ ul.bookmarks li:hover {
     background-color: var(--var-base-light-gray);
 }
 
-button.tablist {
+div.tablist {
+    position: fixed;
+    font-size: x-large;
+    top: 10px;
+    right: 10px;
+    text-align: right;
+}
+
+div.tablist button {
     font-size: x-large;
     height: 40px;
     width: 40px;
     vertical-align: middle;
     text-align: center;
 }
-
-.twocols {
-    display: flex;
-    flex-direction: row;
-}
-
-.twocols > * {
-    flex-grow: 1;
-}
-
-/* .twocols > :first-child {
-    grid-row-start: 1;
-    grid-row-end: 1;
-    grid-column-start: 1;
-    grid-column-end: 1;
-}
-
-.twocols > :nth-child(2) {
-    grid-row-start: 1;
-    grid-row-end: 1;
-    grid-column-start: 2;
-    grid-column-end: 2;
-} */
