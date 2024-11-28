@@ -33,7 +33,7 @@ math {
     font-size: large;
 }
 
-header {
+nav {
     position: fixed;
     overflow-y: scroll;
     top: 0;
@@ -43,7 +43,14 @@ header {
     background-color: #fff;
     border-top: 1px solid var(--var-base-gray);
     border-left: 1px solid var(--var-base-gray);
+    min-width: 25vw;
 }
+
+/* header ul > li.selected {
+    background-color: var(--var-base-blue);
+    border-color: var(--var-base-blue);
+    color: #fff;
+} */
 
 ul.tablist {
     margin: 0;
@@ -63,26 +70,25 @@ ul.tablist > li {
     background-color: #fff;
 }
 
+ul.tablist > li.selected {
+    background-color: var(--var-base-blue);
+    border-color: var(--var-base-blue);
+    color: #fff;
+}
+
 span.untitled {
     color: #666;
     font-style: italic;
 }
 
-.tabheader > * {
+.app-menu-row > * {
     margin: 2px;
 }
 
-.tabheader {
-    display: inline-block;
+.app-menu-row {
     border-bottom: 1px solid var(--var-base-gray);
     padding: 5px;
     background-color: #fff;
-}
-
-header ul > li.selected {
-    background-color: var(--var-base-blue);
-    border-color: var(--var-base-blue);
-    color: #fff;
 }
 
 dialog {
@@ -90,8 +96,8 @@ dialog {
     border-radius: var(--var-btn-radius);
 }
 
-dialog button {
-    margin-right: 5px;
+dialog button, dialog.button {
+    margin: 3px;
 }
 
 td button:not(:last-child) {
@@ -140,11 +146,19 @@ ul.main, ol.main > li.selected {
     overflow-y: scroll;
 }
 
+a.button {
+    text-decoration: none;
+    color: #000;
+}
+
 button, .button {
     border: 1pt solid var(--var-base-gray);
     border-radius: var(--var-btn-radius);
     background-color: var(--var-base-light-gray);
     padding: 4pt;
+    font-style: normal;
+    font-weight: normal;
+    color: #000;
 }
 
 button.selected, button:active, .button.selected, .button:active {
@@ -197,7 +211,6 @@ ul.bookmarks {
     padding: 0;
     margin: 0;
     background-color: #fff;
-    border-right: 1px solid var(--var-base-gray);
     text-align: left;
 }
 
