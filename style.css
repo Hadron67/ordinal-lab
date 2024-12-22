@@ -12,6 +12,7 @@ body {
     --var-base-gray: #ccc;
     --var-base-light-gray: #f0f0f0;
     --var-btn-radius: 3pt;
+    --var-base-light-orange: #1e1;
     --var-header-height: 50px;
 }
 
@@ -127,6 +128,7 @@ textarea {
     height: 100px;
     border: 1px solid var(--var-base-gray);
     border-radius: var(--var-btn-radius);
+    padding: 4px;
 }
 
 textarea:focus {
@@ -272,4 +274,9 @@ dialog.loading {
 }
 dialog.loading:focus {
     outline: none;
+}
+
+span.cursor-marker:before {
+    content: "";
+    border-left: 2px solid var(--var-base-light-orange);
 }
