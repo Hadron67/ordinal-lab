@@ -137,15 +137,29 @@ textarea:focus {
 
 ul.main, ol.main {
     padding: 0 0;
+    margin-left: 2px;
     list-style-type: none;
 }
 ul.main, ol.main > li {
+    padding: 0;
+}
+.ordinal-item {
     padding: 3pt 10pt;
-    border-left: 2pt solid #fff;
     border-bottom: 1pt solid var(--var-base-gray);
 }
-ul.main, ol.main > li.selected {
+.ordinal-item.selected {
     border-left: 2pt solid var(--var-base-blue);
+}
+
+.sublist-container {
+    padding: 5px 0 5px 0;
+    border-bottom: 2px solid var(--var-base-blue);
+    /* border-left: 1px solid var(--var-base-gray); */
+}
+.sublist-container ol {
+    list-style: none;
+    padding: 0;
+    /* padding: 0 0 0 2px; */
 }
 
 .ordinal-container {
@@ -276,7 +290,15 @@ dialog.loading:focus {
     outline: none;
 }
 
-span.cursor-marker:before {
+.cursor-marker:before {
     content: "";
     border-left: 2px solid var(--var-base-light-orange);
+}
+
+button.sublist-control {
+    aspect-ratio: 1;
+    width: 40px;
+    height: 40px;
+    font-size: x-large;
+    padding: 2px;
 }
