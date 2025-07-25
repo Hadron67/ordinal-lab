@@ -12,8 +12,7 @@ const CC_TAB = '\t'.charCodeAt(0);
 const CC_CR = '\r'.charCodeAt(0);
 const CC_LF = '\n'.charCodeAt(0);
 
-/** @type {{[n: string]: string}} */
-export const CHAR_CNAMES = {
+export const CHAR_CNAMES: { [n: string]: string; } = {
     'alpha': '\u03B1',
     'beta': '\u03B2',
     'gamma': '\u03B2',
@@ -38,37 +37,22 @@ export const CHAR_CNAMES = {
     'to': '\u2192',
 };
 
-/**
- * @param {number} ch
- */
-function isLetterCode(ch) {
+function isLetterCode(ch: number) {
     return ch >= CC_UPPER_A && ch <= CC_UPPER_Z || ch >= CC_LOWER_A && ch <= CC_LOWER_Z;
 }
 
-/**
- * @param {number} ch
- */
-function isWhitespace(ch) {
+function isWhitespace(ch: number) {
     return ch === CC_SPACE || ch === CC_TAB || ch === CC_CR || ch === CC_LF;
 }
 
-/**
- * @param {string | Node[]} nodes
- */
-function nodeOrStringToNode(nodes) {
+function nodeOrStringToNode(nodes: string | Node[]) {
     if (typeof nodes === 'string') {
         return [nodes];
     } else return nodes;
 }
 
-/**
- * @template T
- * @param {T[]} arr
- * @param {number} i
- */
-function deleteElement(arr, i) {
-    /** @type {T[]} */
-    const ret = [];
+function deleteElement<T>(arr: T[], i: number) {
+    const ret: T[] = [];
     for (let j = 0; j < arr.length; j++) {
         if (j !== i) {
             ret.push(arr[j]);
@@ -77,11 +61,7 @@ function deleteElement(arr, i) {
     return ret;
 }
 
-/**
- * @param {string} input
- * @param {number[]} [markers]
- */
-export function renderTexlite(input, markers) {
+export function renderTexlite(input: string, markers: number[]) {
     let cursor = 0;
 
     return parseElements();
@@ -90,14 +70,10 @@ export function renderTexlite(input, markers) {
         return input.charCodeAt(cursor);
     }
     function parseElements() {
-        /** @type {Node[]} */
-        const ret = [];
+        const ret: Node[] = [];
         let acc = '';
 
-        /**
-         * @param {Node[]} nodes
-         */
-        function emitNodes(nodes) {
+        function emitNodes(nodes: Node[]) {
             if (nodes.length > 0) {
                 if (acc.length > 0) {
                     ret.push(document.createTextNode(acc));

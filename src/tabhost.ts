@@ -1,16 +1,15 @@
 /** @import { Tabpage } from './types/app' */
 
+import { Tabpage } from "./types/app";
+
 export class TabEntry {
-    /**
-     * @param {TabHost} host
-     * @param {Tabpage} page
-     */
-    constructor(host, page) {
-        /** @type {TabHost} */
-        this.host = host;
-        /** @type {Tabpage} */
-        this.page = page;
-        /** @type {HTMLLIElement} */
+    headerElem: HTMLLIElement;
+    scrollY: number;
+    tabHeader: Element | null = null;
+    ondefocus: ((entry: TabEntry) => void)[] = [];
+    onfocus: ((entry: TabEntry) => void)[] = [];
+    onclose: ((entry: TabEntry) => void)[] = [];
+    constructor(public host: TabHost, public page: Tabpage) {
         this.headerElem = document.createElement('li');
         this.headerElem.append(...page.getTitle());
         this.headerElem.addEventListener('click', () => {
@@ -18,19 +17,6 @@ export class TabEntry {
                 this.select();
             }
         });
-
-        /** @type {number} */
-        this.scrollY = 0;
-
-        /** @type {Element | null} */
-        this.tabHeader = null;
-
-        /** @type {((entry: TabEntry) => void)[]} */
-        this.ondefocus = [];
-        /** @type {((entry: TabEntry) => void)[]} */
-        this.onfocus = [];
-        /** @type {((entry: TabEntry) => void)[]} */
-        this.onclose = [];
     }
     isFocused() {
         return this === this.host.activeTab;
@@ -77,37 +63,16 @@ export class TabEntry {
 }
 
 export class TabHost {
-    /**
-     * @param {Element} tablist
-     * @param {Element} tabheader
-     * @param {Element} content
-     */
-    constructor(tablist, tabheader, content) {
-        /** @type {Element} */
-        this.tablist = tablist;
-        /** @type {Element} */
-        this.tabheader = tabheader;
-        /** @type {Element} */
-        this.content = content;
-
-        /** @type {TabEntry | null} */
-        this.activeTab = null;
-
-        /** @type {TabEntry[]} */
-        this.tabs = [];
+    activeTab: TabEntry | null = null;
+    tabs: TabEntry[] = [];
+    constructor(public tablist: Element, public tabheader: Element, public content: Element) {
     }
-    /**
-     * @param {Tabpage} page
-     */
-    createTab(page) {
+    createTab(page: Tabpage) {
         const ret = new TabEntry(this, page);
         page.onCreate(ret);
         return ret;
     }
-    /**
-     * @param {TabEntry} tab
-     */
-    addTab(tab) {
+    addTab(tab: TabEntry) {
         this.tabs.push(tab);
         this.tablist.appendChild(tab.headerElem);
         if (this.activeTab === null) {

@@ -1,14 +1,9 @@
-/** @import { Y0MontagneImageConfig, Y0MontagneRow } from './types/ordinal' */
-
 import { html } from './domutils.js';
+import { Y0MontagneImageConfig, Y0MontagneRow } from './types/ordinal.js';
 
 const SVG = 'http://www.w3.org/2000/svg';
 
-/**
- * @param {Y0MontagneRow[]} montagne
- * @param {Y0MontagneImageConfig} config
- */
-export function generateY0Montagne(montagne, config) {
+export function generateY0Montagne(montagne: Y0MontagneRow[], config: Y0MontagneImageConfig) {
     const svg = document.createElementNS(SVG, 'svg');
     document.body.appendChild(svg);
     let width = 0;
@@ -64,10 +59,7 @@ export function generateY0Montagne(montagne, config) {
     return svg;
 }
 
-/**
- * @param {number[][]} mat
- */
-export function generateMatrix(mat) {
+export function generateMatrix(mat: number[][]) {
     const ret = document.createElement('table');
     const tbody = document.createElement('tbody');
     for (const row of mat) {

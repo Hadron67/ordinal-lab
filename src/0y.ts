@@ -1,12 +1,9 @@
 /** @import { Y0MontagneRow } from './types/ordinal'; */
 
+import { Y0MontagneRow } from './types/ordinal.js';
 import { transpose } from './utils.js';
 
-/**
- * @param {Y0MontagneRow} row
- * @param {number} elemPtr
- */
-function findY0Parent(row, elemPtr) {
+function findY0Parent(row: Y0MontagneRow, elemPtr: number) {
     const start = row.data[elemPtr];
     if (row.parentPtr.length === 0) {
         for (elemPtr--; elemPtr >= 0; elemPtr--) {
@@ -16,8 +13,7 @@ function findY0Parent(row, elemPtr) {
         }
         return null;
     }
-    /** @type {number | null} */
-    let ptr = elemPtr;
+    let ptr: number | null = elemPtr;
     while (ptr !== null) {
         const parentElem = row.data[ptr];
         if (parentElem < start) {
@@ -28,17 +24,11 @@ function findY0Parent(row, elemPtr) {
     return null;
 }
 
-/**
- * @param {number[]} data
- * @returns {Y0MontagneRow[]}
- */
-export function y0Montagne(data) {
-    /** @type {Y0MontagneRow[]} */
-    const ret = [{data, parentPtr: []}];
+export function y0Montagne(data: number[]): Y0MontagneRow[] {
+    const ret: Y0MontagneRow[] = [{data, parentPtr: []}];
     let lastRow = ret[0];
     while (true) {
-        /** @type {Y0MontagneRow} */
-        const newRow = {data: [], parentPtr: []};
+        const newRow: Y0MontagneRow = {data: [], parentPtr: []};
         for (let i = 0; i < data.length; i++) {
             const elem = lastRow.data[i];
             const parentPtr = findY0Parent(lastRow, i);
@@ -54,11 +44,7 @@ export function y0Montagne(data) {
     return ret;
 }
 
-/**
- * @template T
- * @param {T[]} arr
- */
-function isSameElem(arr) {
+function isSameElem<T>(arr: T[]) {
     if (arr.length > 0) {
         const first = arr[0];
         for (let i = 0; i < arr.length; i++) {
@@ -70,10 +56,7 @@ function isSameElem(arr) {
     return true;
 }
 
-/**
- * @param {number[][]} bms
- */
-export function stringifyBMS(bms) {
+export function stringifyBMS(bms: number[][]) {
     const transposed = transpose(bms);
     let ret = '';
     for (let i = 0; i < transposed.length; i++) {
@@ -87,31 +70,19 @@ export function stringifyBMS(bms) {
     return ret;
 }
 
-/**
- * @param {Y0MontagneRow} montagne
- * @returns {Y0MontagneRow}
- */
-function copyY0MontagneRow(montagne) {
+function copyY0MontagneRow(montagne: Y0MontagneRow): Y0MontagneRow {
     return {data: Array.from(montagne.data), parentPtr: Array.from(montagne.parentPtr)};
 }
 
-/**
- * @param {Y0MontagneRow} row
- */
-function lastElemHasParent(row) {
+function lastElemHasParent(row: Y0MontagneRow) {
     return row.parentPtr.length > 0 && row.parentPtr[row.parentPtr.length - 1] !== null && row.data[row.data.length - 1] === 1;
 }
 
-/**
- * @param {Y0MontagneRow[]} montagne
- */
-export function y0ToBMS(montagne) {
-    /** @type {number[][]} */
-    const ret = [];
+export function y0ToBMS(montagne: Y0MontagneRow[]) {
+    const ret: number[][] = [];
     for (let i = 0; i + 1 < montagne.length; i++) {
         const monLine = montagne[i + 1];
-        /** @type {number[]} */
-        const bmsRow = [];
+        const bmsRow: number[] = [];
         for (let j = 0, a = monLine.parentPtr; j < a.length; j++) {
             const ptr = a[j];
             bmsRow.push(ptr === null ? 0 : bmsRow[ptr] + 1);
@@ -121,18 +92,12 @@ export function y0ToBMS(montagne) {
     return ret;
 }
 
-/**
- * @param {number[]} seq
- */
-export function findLiftings(seq) {
+export function findLiftings(seq: number[]) {
     const montagne = y0Montagne(seq);
 
 }
 
-/**
- * @param {Y0MontagneRow[]} montagne
- */
-export function expandY0(montagne) {
+export function expandY0(montagne: Y0MontagneRow[]) {
     while (montagne.length > 0 && !lastElemHasParent(montagne[montagne.length - 1])) {
         montagne.pop();
     }
@@ -148,8 +113,7 @@ export function expandY0(montagne) {
     const badRoot = goodRoot + 1;
     const badRootLength = length - badRoot;
     // Initialize result montagne
-    /** @type {Y0MontagneRow[]} */
-    const ret = [];
+    const ret: Y0MontagneRow[] = [];
     for (let i = 0; i < montagne.length - 1; i++) {
         const newRow = copyY0MontagneRow(montagne[i]);
         newRow.data[length - 1]--;

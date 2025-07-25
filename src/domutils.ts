@@ -1,28 +1,16 @@
-
-/**
- * @param {string} tag
- * @param {(Node | string)[]} children
- */
-export function html(tag, ...children) {
+export function html(tag: string, ...children: (Node | string)[]) {
     const ret = document.createElement(tag);
     ret.append(...children);
     return ret;
 }
 
-/**
- * @param {(Node | string)[]} elems
- */
-export function li(...elems) {
+export function li(...elems: (Node | string)[]) {
     const ret = document.createElement('li');
     ret.append(...elems);
     return ret;
 }
 
-/**
- * @param {string} text
- * @param {string} link
- */
-export function href(text, link) {
+export function href(text: string, link: string) {
     const ret = document.createElement('a');
     ret.href = link;
     ret.target = '_blank';
@@ -30,11 +18,7 @@ export function href(text, link) {
     return ret;
 }
 
-/**
- * @param {string | Node} text
- * @param {(this: HTMLButtonElement, ev: MouseEvent) => void} click
- */
-export function button(text, click) {
+export function button(text: string | Node, click: (this: HTMLButtonElement, ev: MouseEvent) => void) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.append(text);
@@ -42,11 +26,7 @@ export function button(text, click) {
     return btn;
 }
 
-/**
- * @param {string} text
- * @param {(b: boolean) => void} [onclick]
- */
-export function toggleButton(text, onclick) {
+export function toggleButton(text: string, onclick: (b: boolean) => void) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.textContent = text;
@@ -57,12 +37,7 @@ export function toggleButton(text, onclick) {
     return btn;
 }
 
-/**
- * @template T
- * @param {T[][]} arr
- * @param {(elem: T) => HTMLElement} creator
- */
-export function createTable(arr, creator) {
+export function createTable<T>(arr: T[][], creator: (elem: T) => HTMLElement) {
     const table = document.createElement('table');
     const tbody = document.createElement('tbody');
     for (const row of arr) {
@@ -74,31 +49,14 @@ export function createTable(arr, creator) {
     return table;
 }
 
-/**
- * @template D, T
- */
-export class ListView {
-    /**
-     * @param {() => T} factory
-     * @param {(elem: T, data: D) => void} adapter
-     */
-    constructor(factory, adapter) {
-        /** @type {HTMLUListElement} */
+export class ListView<D, T> {
+    root: HTMLUListElement;
+    elements: T[] = [];
+    recycledElements: T[] = [];
+    constructor(public readonly factory: () => T, public readonly adapter: (elem: T, data: T) => void) {
         this.root = document.createElement('ul');
-        /** @type {() => T} */
-        this.factory = factory;
-        /** @type {(elem: T, data: D) => void} */
-        this.adapter = adapter;
-
-        /** @type {T[]} */
-        this.elements = [];
-        /** @type {T[]} */
-        this.recycledElements = [];
     }
-    /**
-     * @param {D} data
-     */
-    add(data) {
+    add(data: T) {
         let newItem = this.recycledElements.pop();
         if (newItem === void 0) {
             newItem = this.factory();

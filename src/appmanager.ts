@@ -4,15 +4,13 @@ import { button, href, html } from './domutils.js';
 import { deserializeOrdinalExpander, enumeratorFactory, OrdinalListExpander, Y0SequenceOrdinalListExpander } from './enumerator.js';
 import { TabEntry, TabHost } from './tabhost.js';
 import { renderTexlite } from './texlite.js';
+import { Applet, AppletFactory, AppletInfo, Tabpage } from './types/app.js';
 
 const APPLETS_STORE = 'applets';
 const APPDATA_STORE = 'appdata';
 const APPDATA_KEY = 'data';
 
-/**
- * @param {(a: IDBDatabase | null) => void} cb
- */
-function openDBRequest(cb) {
+function openDBRequest(cb: (a: IDBDatabase | null) => void) {
     const req = indexedDB.open('ordinal-lab', 1);
     req.addEventListener('success', function(ev) {
         cb(req.result);
@@ -31,54 +29,26 @@ function openDBRequest(cb) {
     });
 }
 
-/**
- * @param {string} title
- */
-function titleToNode(title) {
+function titleToNode(title: string) {
     if (title.length === 0) {
         const ret = document.createElement('span');
         ret.className = 'untitled';
         ret.textContent = '[untitled]';
         return [ret];
     } else {
-        return renderTexlite(title);
+        return renderTexlite(title, []);
     }
 }
 
-/**
- * @implements {Tabpage}
- */
-export class AppletEntry {
-    /**
-     * @param {App} app
-     * @param {Applet} applet
-     * @param {string} title
-     * @param {number} id
-     */
-    constructor(app, applet, title, id) {
-        /** @type {App} */
-        this.app = app;
-        /** @type {Applet} */
-        this.applet = applet;
-        /** @type {string} */
-        this.title = title;
-        /** @type {number} */
-        this.id = id;
-
-        /** @type {TabEntry | null} */
-        this.entry = null;
-
-        /** @type {boolean} */
-        this.deleted = false;
-    }
-    /**
-     * @param {TabEntry} entry
-     */
-    onCreate(entry) {
+export class AppletEntry implements Tabpage {
+    entry: TabEntry | null = null;
+    deleted = false;
+    constructor(public app: App, public applet: Applet, public title: string, public id: number) {}
+    onCreate(entry: TabEntry) {
         this.entry = entry;
         entry.onclose.push(() => {
             if (!this.deleted) {
-                this.save();
+                this.save(null);
             }
         });
         const tabHeader = document.createElement('div');
@@ -101,10 +71,7 @@ export class AppletEntry {
     getRoot() {
         return this.applet.getRoot();
     }
-    /**
-     * @param {() => void} [cb]
-     */
-    save(cb) {
+    save(cb: (() => void) | null) {
         this.app.requestDB(db => {
             if (db) {
                 const store = db.transaction(APPLETS_STORE, 'readwrite').objectStore(APPLETS_STORE);
@@ -119,20 +86,13 @@ export class AppletEntry {
     }
 }
 
-/** @implements {Tabpage} */
-class WelcomeScreen {
-    /**
-     * @param {App} app
-     */
-    constructor(app) {
-        /** @type {App} */
-        this.app = app;
-        /** @type {HTMLDivElement} */
-        this.root = document.createElement('div');
+class WelcomeScreen implements Tabpage {
+    root = document.createElement('div');
+    savedAppletList = document.createElement('tbody');
+    importDialogue = document.createElement('dialog');
+    constructor(public app: App) {
         this.root.classList.add('welcome');
-
         this.root.append(html('h2', 'Introduction'), html('p', 'This site is a collection of useful tools (called applets) for exploring and studying ', href('ordinal numbers', 'https://en.wikipedia.org/wiki/Ordinal_number'), '. Its also a work in progress.'));
-
         this.root.append(html('h2', 'Applets'));
 
         const appletList = document.createElement('ul');
@@ -140,8 +100,6 @@ class WelcomeScreen {
         this.root.append(appletList);
 
         this.root.append(html('h2', 'Existing documents'));
-        /** @type {HTMLTableCaptionElement} */
-        this.savedAppletList = document.createElement('tbody');
         this.root.append(html('table',
             html('thead',
                 html('tr', html('th', 'Title'), html('th', 'Type'), html('th', 'Actions')),
@@ -155,8 +113,6 @@ class WelcomeScreen {
             }
         })));
 
-        /** @type {HTMLDialogElement} */
-        this.importDialogue = document.createElement('dialog');
         {
             const textInput = document.createElement('textarea');
             const fileInput = document.createElement('input');
@@ -179,10 +135,7 @@ class WelcomeScreen {
             );
         }
     }
-    /**
-     * @param {TabEntry} entry
-     */
-    onCreate(entry) {
+    onCreate(entry: TabEntry) {
         entry.onfocus.push(() => this.refreshSavedApplets());
     }
     getTitle() {
@@ -191,11 +144,7 @@ class WelcomeScreen {
     getRoot() {
         return this.root;
     }
-    /**
-     * @param {string} text
-     * @param {() => Applet} creator
-     */
-    appletButton(text, creator) {
+    appletButton(text: string, creator: () => Applet) {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.textContent = text;
@@ -231,18 +180,26 @@ class WelcomeScreen {
 }
 
 export class App {
-    /**
-     * @param {HTMLElement} root
-     */
-    constructor(root) {
-        /** @type {HTMLElement} */
-        this.root = root;
-        /** @type {HTMLElement} */
-        this.appContainer = document.createElement('main');
-
-        /** @type {HTMLElement} */
-        this.header = document.createElement('nav');
-
+    appContainer = document.createElement('main');
+    header = document.createElement('nav');
+    appletTabList = document.createElement('ul');
+    appletDeserializers: Map<string, AppletFactory> = new Map();
+    db: IDBDatabase | null = null;
+    dbRequests: ((db: IDBDatabase | null) => void)[] = [];
+    enableAutoSave = true;
+    autoSaver = setInterval(() => {
+        this.saveConfigData();
+        if (this.enableAutoSave) {
+            for (const app of this.mainTabHost.tabs) {
+                if (app.page instanceof AppletEntry) {
+                    app.page.save(null);
+                }
+            }
+        }
+    }, 10000);
+    mainTabHost = new TabHost(this.appletTabList, this.header, this.appContainer);
+    welcomeScreen = new WelcomeScreen(this);
+    constructor(public root: HTMLElement) {
         const btnMenu = button('\u03A9' /* \Omega */, () => {
             if (this.header.isConnected) {
                 this.header.remove();
@@ -256,8 +213,6 @@ export class App {
         const appMenuContainer = document.createElement('div');
         appMenuContainer.classList.add('app-menu');
 
-        /** @type {HTMLUListElement} */
-        this.appletTabList = document.createElement('ul');
         this.appletTabList.className = 'tablist';
 
         const menuBtnContainer = document.createElement('div');
@@ -268,15 +223,8 @@ export class App {
 
         root.append(menuBtnContainer, this.appContainer);
 
-        /** @type {Map<string, AppletFactory>} */
-        this.appletDeserializers = new Map();
-
         this.appletDeserializers.set('ordinal-enumerator', enumeratorFactory);
 
-        /** @type {IDBDatabase | null} */
-        this.db = null;
-        /** @type {((db: IDBDatabase | null) => void)[]} */
-        this.dbRequests = [];
         openDBRequest(db => {
             this.db = db;
             for (const r of this.dbRequests) {
@@ -284,46 +232,17 @@ export class App {
             }
         });
         this.openLoadScreen();
-
-        /** @type {boolean} */
-        this.enableAutoSave = true;
-
-        /** @type {number | null} */
-        this.autoSaver = setInterval(() => {
-            this.saveConfigData();
-            if (this.enableAutoSave) {
-                for (const app of this.mainTabHost.tabs) {
-                    if (app.page instanceof AppletEntry) {
-                        app.page.save();
-                    }
-                }
-            }
-        }, 10000);
-
-        /** @type {TabHost} */
-        this.mainTabHost = new TabHost(this.appletTabList, this.header, this.appContainer);
-        /** @type {WelcomeScreen} */
-        this.welcomeScreen = new WelcomeScreen(this);
         this.mainTabHost.addTab(this.mainTabHost.createTab(this.welcomeScreen));
-
         this.migrantLocalStorageData();
     }
-    /**
-     * @param {(db: IDBDatabase | null) => void} cb
-     */
-    requestDB(cb) {
+    requestDB(cb: (db: IDBDatabase | null) => void) {
         if (this.db) {
             cb(this.db);
         } else {
             this.dbRequests.push(cb);
         }
     }
-    /**
-     * @param {any} data
-     * @param {string} title
-     * @param {number} id
-     */
-    deserializeAndOpenApplet(data, title, id) {
+    deserializeAndOpenApplet(data: any, title: string, id: number) {
         const des = this.appletDeserializers.get(data.type);
         if (des !== void 0) {
             const applet = des.deserialize(data);
@@ -337,13 +256,8 @@ export class App {
             }
         }
     }
-    /**
-     * @param {number} count
-     * @param {(n: number[]) => void} cb
-     */
-    getNextAppletId(count, cb) {
-        /** @type {boolean[]} */
-        const ids = [];
+    getNextAppletId(count: number, cb: (n: number[]) => void) {
+        const ids: boolean[] = [];
         for (const tab of this.mainTabHost.tabs) {
             const app = tab.page;
             if (app instanceof AppletEntry) {
@@ -357,20 +271,14 @@ export class App {
             cb(firstNonTrueSlot(ids, count));
         });
     }
-    /**
-     * @param {Applet} applet
-     * @param {string} title
-     * @param {() => void} [cb]
-     */
-    newApplet(applet, title, cb) {
+    newApplet(applet: Applet, title: string, cb: (() => void) | null) {
         this.getNextAppletId(1, ids => {
             this.mainTabHost.addTab(this.mainTabHost.createTab(new AppletEntry(this, applet, title, ids[0]))).select();
             if (cb) cb();
         });
     }
     getOpenedApplets() {
-        /** @type {AppletEntry[]} */
-        const ret = [];
+        const ret: AppletEntry[] = [];
         for (const app of this.mainTabHost.tabs) {
             if (app.page instanceof AppletEntry) {
                 ret.push(app.page);
@@ -379,8 +287,7 @@ export class App {
         return ret;
     }
     saveConfigData() {
-        /** @type {any} */
-        const data = {
+        const data: any = {
             activeAppletId: null,
             openedAppletIds: this.getOpenedApplets().map(e => e.id),
         };
@@ -396,11 +303,7 @@ export class App {
             }
         });
     }
-    /**
-     * @param {number[]} ids
-     * @param {(ok: boolean) => void} [cb]
-     */
-    loadAndOpenApplets(ids, cb) {
+    loadAndOpenApplets(ids: number[], cb: ((ok: boolean) => void) | null) {
         this.requestDB(db => {
             if (db) {
                 const store = db.transaction(APPLETS_STORE, 'readonly').objectStore(APPLETS_STORE);
@@ -437,10 +340,7 @@ export class App {
             dialogue.remove();
         });
     }
-    /**
-     * @param {(ok: boolean) => void} [cb]
-     */
-    loadAppdata(cb) {
+    loadAppdata(cb: ((ok: boolean) => void) | null) {
         this.requestDB(db => {
             if (db) {
                 const appdata = db.transaction(APPDATA_STORE, 'readonly').objectStore(APPDATA_STORE);
@@ -467,10 +367,7 @@ export class App {
             }
         });
     }
-    /**
-     * @param {number} id
-     */
-    getOpenedAppletById(id) {
+    getOpenedAppletById(id: number) {
         for (const app of this.mainTabHost.tabs) {
             if (app.page instanceof AppletEntry && app.page.id === id) {
                 return app.page;
@@ -478,21 +375,14 @@ export class App {
         }
         return null;
     }
-    /**
-     * @param {number} id
-     */
-    selectAppletById(id) {
+    selectAppletById(id: number) {
         const applet = this.getOpenedAppletById(id);
         if (applet && applet.entry) applet.entry.select();
     }
-    /**
-     * @param {(arg0: AppletInfo[]) => void} cb
-     */
-    getAllAppletInfo(cb) {
+    getAllAppletInfo(cb: (arg0: AppletInfo[]) => void) {
         this.requestDB(db => {
             if (db) {
-                /** @type {AppletInfo[]} */
-                const ret = [];
+                const ret: AppletInfo[] = [];
                 const store = db.transaction(APPLETS_STORE, 'readonly').objectStore(APPLETS_STORE);
                 const req = store.openCursor();
                 req.addEventListener('success', () => {
@@ -514,13 +404,7 @@ export class App {
             }
         });
     }
-    /**
-     * @param {string} msg
-     * @param {string} positive
-     * @param {string} negative
-     * @param {(ret: boolean) => void} cb
-     */
-    confirmationDialogue(msg, positive, negative, cb) {
+    confirmationDialogue(msg: string, positive: string, negative: string, cb: (ret: boolean) => void) {
         const dialogue = document.createElement('dialog');
         const btn = button(positive, () => {
             cb(true);
@@ -536,10 +420,7 @@ export class App {
         this.root.append(dialogue);
         dialogue.showModal();
     }
-    /**
-     * @param {number} id
-     */
-    openAppletId(id) {
+    openAppletId(id: number) {
         const applet = this.getOpenedAppletById(id);
         if (applet && applet.entry) {
             applet.entry.select();
@@ -547,11 +428,7 @@ export class App {
             this.loadAndOpenApplets([id], () => this.selectAppletById(id));
         }
     }
-    /**
-     * @param {number} id
-     * @param {() => void} cb
-     */
-    deleteApplet(id, cb) {
+    deleteApplet(id: number, cb: () => void) {
         const applet = this.getOpenedAppletById(id);
         if (applet && applet.entry) {
             applet.deleted = true;
@@ -577,8 +454,7 @@ export class App {
                             const store = db.transaction(APPLETS_STORE, 'readwrite').objectStore(APPLETS_STORE);
                             let done = 0;
                             for (let i = 0, a = data.applets; i < a.length; i++) {
-                                /** @type {any} */
-                                const app = {};
+                                const app: any = {};
                                 Object.assign(app, a[i]);
                                 app.id = ids[i];
                                 const req = store.put(app);
@@ -599,7 +475,7 @@ export class App {
     /**
      * @param {number} id
      */
-    exportApplet(id) {
+    exportApplet(id: number) {
         this.requestDB(db => {
             if (db) {
                 const store = db.transaction(APPLETS_STORE, 'readonly').objectStore(APPLETS_STORE);
@@ -625,13 +501,8 @@ export class App {
             }
         });
     }
-    /**
-     * @param {any} data
-     * @param {() => void} [cb]
-     */
-    importAppletData(data, cb) {
-        /** @type {any} */
-        const data0 = {};
+    importAppletData(data: any, cb: (() => void) | null) {
+        const data0: any = {};
         Object.assign(data0, data);
         this.getNextAppletId(1, ids => {
             data0.id = ids[0];
@@ -646,13 +517,8 @@ export class App {
     }
 }
 
-/**
- * @param {boolean[]} arr
- * @param {number} count
- */
-function firstNonTrueSlot(arr, count) {
-    /** @type {number[]} */
-    const ret = [];
+function firstNonTrueSlot(arr: boolean[], count: number) {
+    const ret: number[] = [];
     for (let i = 0; i < arr.length; i++) {
         if (arr[i] !== true) {
             ret.push(i);
