@@ -13,8 +13,7 @@ export function generateY0Montagne(montagne: Y0MontagneRow[], config: Y0Montagne
         let maxTextHeight = 0;
         const baseY = height;
         const row = montagne[montagne.length - 1 - i];
-        /** @type {string[]} */
-        const paths = [];
+        const paths: string[] = [];
         for (let j = 0, a = row.data; j < a.length; j++) {
             const centreX = config.paddingLeftRight + config.elemGap * j;
             const txt = document.createElementNS(SVG, 'text');

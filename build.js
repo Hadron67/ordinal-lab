@@ -4,8 +4,8 @@ import { watch, build } from 'rolldown';
  * @param {string[]} cmd
  */
 async function run(cmd) {
-    /** @type {import('rolldown').BuildOptions} */
-    const opt = {
+    /** @type {import('rolldown').BuildOptions[]} */
+    const opt = [{
         output: {
             sourcemap: true,
             file: 'dist/main.js',
@@ -14,7 +14,16 @@ async function run(cmd) {
         input: {
             mainFiles: 'src/main.ts',
         },
-    };
+    }, {
+        output: {
+            sourcemap: true,
+            file: 'service.js',
+            format: 'iife',
+        },
+        input: {
+            mainFiles: 'src/service.ts',
+        },
+    }];
     if (cmd[0] === 'watch') {
         watch(opt);
     } else {
